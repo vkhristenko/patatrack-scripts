@@ -13,32 +13,35 @@ if __name__ == "__main__":
     # FIXME print a meaningful error message
     sys.exit(1)
 
-  if len(sys.argv) == 1:
+  if len(sys.argv) < 3:
     # FIXME print a meaningful error message
     sys.exit(1)
+  
+  config = sys.argv[1]
+  threads = int(sys.argv[2])
 
   # TODO parse arguments and options from the command line
   options = {
     'verbose'             : False,
     'plumbing'            : False,
     'warmup'              : True,
-    'events'              : 4100,
+    'events'              : 400,
     'repeats'             : 4,
-    'jobs'                : 1,
-    'threads'             : 8,                          # per job
-    'streams'             : 8,                          # per job
-    'gpus_per_job'        : 1,                          # per job
+    'jobs'                : 2,
+    'threads'             : threads,                          # per job
+    'streams'             : threads,                          # per job
+    'gpus_per_job'        : 0,                          # per job
     'allow_hyperthreading': False,                      # this has no effect if set_cpu_affinity is False
-    'set_cpu_affinity'    : True,
-    'set_gpu_affinity'    : True,
+    'set_cpu_affinity'    : False,
+    'set_gpu_affinity'    : False,
     'logdir'              : 'logs',                     # relative or absolute path, or None to disable storing the logs
     'keep'                : [ 'resources.json' ],       # additional output files to be kept, along with the logs
   }
 
-  run_io_benchmark = True
-
   info()
+  process = parseProcess(config)
 
+  strstr = """
   for config in sys.argv[1:]:
     process = parseProcess(config)
 
@@ -56,6 +59,7 @@ if __name__ == "__main__":
       multiCmsRun(io, **io_options)
       run_io_benchmark = False
       print
+  """
 
-    print 'Benchmarking %s' % config
-    multiCmsRun(process, **options)
+  print 'Benchmarking %s' % config
+  multiCmsRun(process, **options)
